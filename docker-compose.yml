@@ -1,6 +1,6 @@
 services:
   inference:
-    container_name: inference
+    container_name: inference-arb
     env_file:
       - .env
     build: .
@@ -16,7 +16,7 @@ services:
       - ./inference-data:/app/data
   
   updater:
-    container_name: updater
+    container_name: updater-arb
     build: .
     environment:
       - INFERENCE_API_ADDRESS=http://inference:8000
@@ -31,17 +31,6 @@ services:
       inference:
         condition: service_healthy
 
-  worker:
-    container_name: worker
-    image: alloranetwork/allora-offchain-node:v0.4.0
-    volumes:
-      - ./worker-data:/data
-    depends_on:
-      inference:
-        condition: service_healthy
-    env_file:
-      - ./worker-data/env_file
 
 volumes:
   inference-data:
-  worker-data:
