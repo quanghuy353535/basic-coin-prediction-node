@@ -1,14 +1,14 @@
 services:
   inference:
-    container_name: inference
+    container_name: inference-sol
     env_file:
       - .env
     build: .
     command: python -u /app/app.py
     ports:
-      - "8000:8000"
+      - "8004:8004"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://inference:8000/inference/${TOKEN}"]
+      test: ["CMD", "curl", "-f", "http://inference:8004/inference/${TOKEN}"]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -16,10 +16,10 @@ services:
       - ./inference-data:/app/data
   
   updater:
-    container_name: updater
+    container_name: updater-sol
     build: .
     environment:
-      - INFERENCE_API_ADDRESS=http://inference:8000
+      - INFERENCE_API_ADDRESS=http://inference:8004
     command: >
       sh -c "
       while true; do
@@ -31,17 +31,6 @@ services:
       inference:
         condition: service_healthy
 
-  worker:
-    container_name: worker
-    image: alloranetwork/allora-offchain-node:v0.4.0
-    volumes:
-      - ./worker-data:/data
-    depends_on:
-      inference:
-        condition: service_healthy
-    env_file:
-      - ./worker-data/env_file
 
 volumes:
   inference-data:
-  worker-data:
